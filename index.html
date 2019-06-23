@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+        <title>Audio API</title>
+        <meta name="description" content="Forays into using web audio API for fun and profit.">
+
+        <style>
+
+            body {
+                
+            }
+
+        </style>
+    </head>
+    <body>
+        <h1>Audio API</h1>
+        <button id="btn">Play</button>
+
+        <script>
+
+            const btn = document.getElementById('btn'),
+                audioContext = new AudioContext(),
+                oscillator = audioContext.createOscillator()
+            
+            function attachSound(button, sound) {
+                sound.start()
+                button.addEventListener('mousedown', function() {
+                    sound.connect(audioContext.destination)
+                })
+                button.addEventListener('mouseup', function() {
+                    sound.disconnect(audioContext.destination)
+                })
+            }
+            
+            attachSound(btn, oscillator)
+
+        </script>
+    </body>
+</html>
