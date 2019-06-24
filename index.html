@@ -2,45 +2,119 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <title>Audio API</title>
         <meta name="description" content="Forays into using web audio API for fun and profit.">
 
         <style>
 
             body {
-                
+                font: 1em/1.2 sans-serif;
+                background-color: #ccc;
+                padding: 0;
+                margin: 0;
+            }
+
+            #keyboard {
+                display: flex;
+                flex-flow: row nowrap;
+            }
+
+            .key {
+                border: solid 1px #ccc;
+                background-color: #fff;
+                flex: 1 0 7.6%;
+                min-height: 8rem;
+            }
+
+            .key:active {
+                background-color: #000;
+                color: #fff;
+            }
+
+            .key:focus {
+                outline: none;
             }
 
         </style>
+
     </head>
     <body>
-        <h1>Audio API</h1>
-        <button id="btn">Play</button>
 
+        <h1 style="padding: 1rem; font-size: 1.5rem; color: #fff; background: #000; margin: 0;">Audio API</h1>
+        <fieldset>
+            <label for="vol">Volume</label>
+            <input id="vol" type="range" min="0" max="1" step="0.1" value="0.5">
+        </fieldset>
+        <div id="keyboard"></div>
+        
+        <script src="./fastclick.js"></script>
         <script>
 
-            const btn = document.getElementById('btn'),
-                audioContext = new AudioContext()
-            
-            function attachSound(button, sound) {
-                sound.start()
-                button.addEventListener('mousedown', function() {
-                    sound.connect(audioContext.destination)
-                })
-                button.addEventListener('mouseup', function() {
-                    sound.disconnect(audioContext.destination)
-                })
-            }
+            const audioContext = new AudioContext(),
+                keys = [
+                    {tone: 'C', octave: 2, freq: 65.41},
+                    {tone: 'C#', octave: 2, freq: 69.30}, 
+                    {tone: 'D', octave: 2, freq: 73.42},
+                    {tone: 'Eb', octave: 2, freq: 77.78}, 
+                    {tone: 'E', octave: 2, freq: 82.41},
+                    {tone: 'F', octave: 2, freq: 87.31}, 
+                    {tone: 'F#', octave: 2, freq: 92.50},
+                    {tone: 'G', octave: 2, freq: 98.00}, 
+                    {tone: 'Ab', octave: 2, freq: 103.83},
+                    {tone: 'A', octave: 2, freq: 110.00},
+                    {tone: 'A#', octave: 2, freq: 116.54},
+                    {tone: 'B', octave: 2, freq: 123.47},
+                    {tone: 'C', octave: 3, freq: 130.81}
+                ],
+                vol_btn = document.getElementById('vol'),
+                gainNode = audioContext.createGain()
 
-            function createOsc(audioctx) {
+            function createOsc(freq, audioctx) {
                 let osc = audioctx.createOscillator()
-                osc.type = 'square'
+                osc.type = 'triangle'
+                osc.frequency.setValueAtTime(freq, audioctx.currentTime)
                 return osc
             }
-
             
-            attachSound(btn, createOsc(audioContext))
+            function attachSound(button, sound_in, sound_out) {
+                sound_in.start()
+                button.addEventListener('touchstart', function(ev) {
+                    sound_in.connect(sound_out)
+                })
+                button.addEventListener('touchend', function(ev) {
+                    sound_in.disconnect(sound_out)
+                })
+            }
+
+            function attachVolumeControl(btn, audioctx) {
+                gainNode.connect(audioctx.destination)
+                btn.addEventListener('change', function(ev) {
+                    gainNode.gain.setValueAtTime(ev.target.value, audioctx.currentTime)
+                })   
+            }
+
+            function renderKeyboard() {
+                let kb = document.getElementById('keyboard')
+                for (let k of keys) {
+                    let btn = document.createElement('button')
+                    btn.className = 'key'
+                    btn.innerHTML = k.tone
+                    kb.appendChild(btn)
+                    attachSound(btn, createOsc(k.freq, audioContext), gainNode)
+                }
+            }
+
+            // Init fastclick to remove tap delay
+            if ('addEventListener' in document) {
+                document.addEventListener('DOMContentLoaded', function() {
+                    FastClick.attach(document.body);
+                }, false);
+            }
+            
+            attachVolumeControl(vol_btn, audioContext)
+
+            renderKeyboard()
 
         </script>
     </body>
