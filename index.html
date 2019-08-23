@@ -81,9 +81,11 @@
                 sound_in.start()
                 button.addEventListener('touchstart', function(ev) {
                     sound_in.connect(sound_out)
+                    ev.preventDefault()
                 })
                 button.addEventListener('touchend', function(ev) {
                     sound_in.disconnect(sound_out)
+                    ev.preventDefault()
                 })
             }
 
@@ -106,11 +108,13 @@
             }
 
             // Init fastclick to remove tap delay
+            /*
             if ('addEventListener' in document) {
                 document.addEventListener('DOMContentLoaded', function() {
                     FastClick.attach(document.body);
                 }, false);
             }
+            */
             
             attachVolumeControl(vol_btn, audioContext)
 
