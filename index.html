@@ -79,11 +79,11 @@
             
             function attachSound(button, sound_in, sound_out) {
                 sound_in.start()
-                button.addEventListener('touchstart', function(ev) {
+                button.addEventListener('pointerdown', function(ev) {
                     sound_in.connect(sound_out)
                     ev.preventDefault()
                 }, false)
-                button.addEventListener('touchend', function(ev) {
+                button.addEventListener('pointerup', function(ev) {
                     sound_in.disconnect(sound_out)
                     ev.preventDefault()
                 }, false)
