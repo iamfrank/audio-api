@@ -101,7 +101,7 @@
                 for (let k of keys) {
                     let btn = document.createElement('button')
                     btn.className = 'key'
-                    btn.innerHTML = k.tone
+                    //btn.innerHTML = k.tone
                     kb.appendChild(btn)
                     attachSound(btn, createOsc(k.freq, audioContext), gainNode)
                 }
