@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-        <title>Audio API</title>
+        <title>Sounds</title>
         <meta name="description" content="Forays into using web audio API for fun and profit.">
 
         <style>
@@ -41,14 +41,13 @@
     </head>
     <body>
 
-        <h1 style="padding: 1rem; font-size: 1.5rem; color: #fff; background: #000; margin: 0;">Audio API</h1>
+        <h1 style="padding: 1rem; font-size: 1.5rem; color: #fff; background: #000; margin: 0;">Sounds with Audio API</h1>
         <fieldset>
             <label for="vol">Volume</label>
             <input id="vol" type="range" min="0" max="1" step="0.1" value="0.5">
         </fieldset>
         <div id="keyboard"></div>
         
-        <script src="./fastclick.js"></script>
         <script>
 
             const audioContext = new AudioContext(),
@@ -80,12 +79,14 @@
             function attachSound(button, sound_in, sound_out) {
                 sound_in.start()
                 button.addEventListener('pointerdown', function(ev) {
-                    sound_in.connect(sound_out)
                     ev.preventDefault()
+                    sound_in.connect(sound_out)
+                    changeBG()
                 }, false)
                 button.addEventListener('pointerup', function(ev) {
-                    sound_in.disconnect(sound_out)
                     ev.preventDefault()
+                    sound_in.disconnect(sound_out)
+                    changeBG()
                 }, false)
             }
 
@@ -93,7 +94,7 @@
                 gainNode.connect(audioctx.destination)
                 btn.addEventListener('change', function(ev) {
                     gainNode.gain.setValueAtTime(ev.target.value, audioctx.currentTime)
-                })   
+                })
             }
 
             function renderKeyboard() {
@@ -107,14 +108,11 @@
                 }
             }
 
-            // Init fastclick to remove tap delay
-            /*
-            if ('addEventListener' in document) {
-                document.addEventListener('DOMContentLoaded', function() {
-                    FastClick.attach(document.body);
-                }, false);
+            function changeBG() {
+                let bg_el = document.querySelector('body'),
+                    random_color = Math.floor(Math.random()*360)
+                bg_el.style.background = `hsl(${ random_color }, 100%, 75%)`
             }
-            */
             
             attachVolumeControl(vol_btn, audioContext)
 
