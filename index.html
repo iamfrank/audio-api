@@ -43,6 +43,8 @@
 
         <h1 style="padding: 1rem; font-size: 1.5rem; color: #fff; background: #000; margin: 0;">Sounds with Audio API</h1>
         <fieldset>
+            <label for="power-on">Turn on</label>
+            <input type="checkbox" id="power-on">
             <label for="vol">Volume</label>
             <input id="vol" type="range" min="0" max="1" step="0.1" value="0.5">
         </fieldset>
@@ -68,24 +70,19 @@
                 ],
                 vol_btn = document.getElementById('vol'),
                 gainNode = audioContext.createGain()
-
-            function createOsc(freq, audioctx) {
-                let osc = audioctx.createOscillator()
-                osc.type = 'triangle'
-                osc.frequency.setValueAtTime(freq, audioctx.currentTime)
-                return osc
-            }
             
-            function attachSound(button, sound_in, sound_out) {
-                sound_in.start()
+            let oscillator = audioContext.createOscillator()
+            
+            function attachSound(button, freq, sound_out) {
                 button.addEventListener('pointerdown', function(ev) {
                     ev.preventDefault()
-                    sound_in.connect(sound_out)
+                    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime)
+                    oscillator.connect(gainNode)
                     changeBG()
                 }, false)
                 button.addEventListener('pointerup', function(ev) {
                     ev.preventDefault()
-                    sound_in.disconnect(sound_out)
+                    oscillator.disconnect(gainNode)
                     changeBG()
                 }, false)
             }
@@ -104,7 +101,7 @@
                     btn.className = 'key'
                     //btn.innerHTML = k.tone
                     kb.appendChild(btn)
-                    attachSound(btn, createOsc(k.freq, audioContext), gainNode)
+                    attachSound(btn, k.freq, gainNode)
                 }
             }
 
@@ -114,9 +111,14 @@
                 bg_el.style.background = `hsl(${ random_color }, 100%, 75%)`
             }
             
-            attachVolumeControl(vol_btn, audioContext)
-
-            renderKeyboard()
+            (function init() {
+                oscillator.type = 'triangle'
+                attachVolumeControl(vol_btn, audioContext)
+                document.getElementById('power-on').addEventListener('click', function() {
+                    oscillator.start()
+                })
+                renderKeyboard()
+            })()
 
         </script>
     </body>
