@@ -72,18 +72,24 @@
                 gainNode = audioContext.createGain()
             
             let oscillator = audioContext.createOscillator()
+
+            function keyDown(freq) {
+                oscillator.frequency.setValueAtTime(freq, audioContext.currentTime)
+                oscillator.connect(gainNode)
+            }
+
+            function keyUp() {
+                oscillator.disconnect(gainNode)
+            }
             
-            function attachSound(button, freq, sound_out) {
+            function attachSound(button, freq) {
                 button.addEventListener('pointerdown', function(ev) {
                     ev.preventDefault()
-                    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime)
-                    oscillator.connect(gainNode)
-                    changeBG()
+                    keyDown(freq)
                 }, false)
                 button.addEventListener('pointerup', function(ev) {
                     ev.preventDefault()
-                    oscillator.disconnect(gainNode)
-                    changeBG()
+                    keyUp()
                 }, false)
             }
 
@@ -104,19 +110,17 @@
                     attachSound(btn, k.freq, gainNode)
                 }
             }
-
-            function changeBG() {
-                let bg_el = document.querySelector('body'),
-                    random_color = Math.floor(Math.random()*360)
-                bg_el.style.background = `hsl(${ random_color }, 100%, 75%)`
-            }
             
             (function init() {
+
                 oscillator.type = 'triangle'
+
                 attachVolumeControl(vol_btn, audioContext)
+
                 document.getElementById('power-on').addEventListener('click', function() {
                     oscillator.start()
                 })
+
                 renderKeyboard()
             })()
 
