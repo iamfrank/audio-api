@@ -43,8 +43,8 @@
 
         <h1 style="padding: 1rem; font-size: 1.5rem; color: #fff; background: #000; margin: 0;">Sounds with Audio API</h1>
         <fieldset>
-            <label for="power-on">Turn on</label>
             <input type="checkbox" id="power-on">
+            <label for="power-on">Turn on</label>
             <label for="vol">Volume</label>
             <input id="vol" type="range" min="0" max="1" step="0.1" value="0.5">
         </fieldset>
@@ -73,24 +73,20 @@
             
             let oscillator = audioContext.createOscillator()
 
-            function keyDown(freq) {
-                oscillator.frequency.setValueAtTime(freq, audioContext.currentTime)
+            function keyDown(ev) {
+                ev.preventDefault()
+                oscillator.frequency.setValueAtTime(ev.target.dataset.freq, audioContext.currentTime)
                 oscillator.connect(gainNode)
             }
 
-            function keyUp() {
+            function keyUp(ev) {
+                ev.preventDefault()
                 oscillator.disconnect(gainNode)
             }
             
             function attachSound(button, freq) {
-                button.addEventListener('pointerdown', function(ev) {
-                    ev.preventDefault()
-                    keyDown(freq)
-                }, false)
-                button.addEventListener('pointerup', function(ev) {
-                    ev.preventDefault()
-                    keyUp()
-                }, false)
+                button.addEventListener('pointerdown', keyDown, false)
+                button.addEventListener('pointerup', keyUp, false)
             }
 
             function attachVolumeControl(btn, audioctx) {
@@ -106,8 +102,9 @@
                     let btn = document.createElement('button')
                     btn.className = 'key'
                     //btn.innerHTML = k.tone
+                    btn.dataset.freq = k.freq
                     kb.appendChild(btn)
-                    attachSound(btn, k.freq, gainNode)
+                    attachSound(btn, k.freq)
                 }
             }
             
