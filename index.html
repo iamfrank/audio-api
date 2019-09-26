@@ -80,8 +80,7 @@
                 ],
                 vol_btn = document.getElementById('vol')
             
-            let volume = 1.0,
-                audioContext,
+            let audioContext,
                 oscillator,
                 volumeNode,
                 gainNode
@@ -102,13 +101,6 @@
                 button.addEventListener('pointerup', keyUp, false)
             }
 
-            function attachVolumeControl(btn, audioctx) {
-                volumeNode.connect(audioctx.destination)
-                btn.addEventListener('change', function(ev) {
-                    volume = parseFloat(ev.target.value)
-                })
-            }
-
             function renderKeyboard() {
                 let kb = document.getElementById('keyboard')
                 for (let k of keys) {
@@ -127,9 +119,10 @@
             (function init() {
 
                 document.getElementById('power-on').addEventListener('click', function() {
-                    audioContext = new AudioContext(),
+                    audioContext = new AudioContext()
                     volumeNode = audioContext.createGain()
                     volumeNode.gain.setTargetAtTime(0.5, audioContext.currentTime, 0);
+                    volumeNode.connect(audioContext.destination)
                     gainNode = audioContext.createGain()
                     gainNode.gain.setTargetAtTime(0.01, audioContext.currentTime, 0);
                     gainNode.connect(volumeNode)
@@ -137,7 +130,9 @@
                     oscillator.type = 'sine'
                     oscillator.connect(gainNode)
                     oscillator.start()
-                    attachVolumeControl(vol_btn, audioContext)
+                    vol_btn.addEventListener('change', function(ev) {
+                        volumeNode.gain.setTargetAtTime(parseFloat(ev.target.value), audioContext.currentTime, 0);
+                    })
                 })
 
                 renderKeyboard()
