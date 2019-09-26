@@ -15,6 +15,18 @@
                 margin: 0;
             }
 
+            fieldset {
+                border: none;
+                padding: .5rem;
+            }
+
+            .power-panel {
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: space-between;
+                align-items: center;
+            }
+
             #keyboard {
                 display: flex;
                 flex-flow: row nowrap;
@@ -52,13 +64,19 @@
     </head>
     <body>
 
-        <h1 style="padding: 1rem; font-size: 1.5rem; color: #fff; background: #000; margin: 0;">Sounds with Audio API</h1>
-        <fieldset>
-            <input type="checkbox" id="power-on">
-            <label for="power-on">Turn on</label>
-            <label for="vol">Volume</label>
-            <input id="vol" type="range" min="0" max="1" step="0.1" value="0.5">
-        </fieldset>
+        <h1 style="padding: 1rem; font-size: 1.5rem; color: #fff; background: #000; margin: 0;">Sounds</h1>
+        
+        <form class="power-panel">
+            <fieldset>
+                <input type="checkbox" id="power-on">
+                <label for="power-on">Power on</label>
+            </fieldset>
+            <fieldset>
+                <label for="vol">Volume</label>
+                <input id="vol" type="range" min="0" max="1" step="0.1" value="0.5">
+            </fieldset>
+        </form>
+        
         <div id="keyboard"></div>
         
         <script>
