@@ -59,6 +59,10 @@
                 outline: none;
             }
 
+            .freq {
+                font-size: .6em;
+            }
+
         </style>
 
     </head>
@@ -66,7 +70,7 @@
 
         <h1 style="padding: 1rem; font-size: 1.5rem; color: #fff; background: #000; margin: 0;">Sounds</h1>
         
-        <form class="power-panel">
+        <div class="power-panel">
             <fieldset>
                 <input type="checkbox" id="power-on">
                 <label for="power-on">Power on</label>
@@ -75,33 +79,32 @@
                 <label for="vol">Volume</label>
                 <input id="vol" type="range" min="0" max="1" step="0.1" value="0.5">
             </fieldset>
-        </form>
+        </div>
         
         <div id="keyboard"></div>
         
+
         <script>
 
-            const keys = [
-                    {tone: 'C', octave: 2, freq: 65.41},
-                    {tone: 'C#', octave: 2, freq: 69.30}, 
-                    {tone: 'D', octave: 2, freq: 73.42},
-                    {tone: 'Eb', octave: 2, freq: 77.78}, 
-                    {tone: 'E', octave: 2, freq: 82.41},
-                    {tone: 'F', octave: 2, freq: 87.31},
-                    {tone: 'F#', octave: 2, freq: 92.50},
-                    {tone: 'G', octave: 2, freq: 98.00},
-                    {tone: 'Ab', octave: 2, freq: 103.83},
-                    {tone: 'A', octave: 2, freq: 110.00},
-                    {tone: 'A#', octave: 2, freq: 116.54},
-                    {tone: 'B', octave: 2, freq: 123.47},
-                    {tone: 'C', octave: 3, freq: 130.81}
-                ],
-                vol_btn = document.getElementById('vol')
-            
-            let audioContext,
+            const power_btn = document.getElementById('power-on'),
+                vol_btn = document.getElementById('vol'),
+                tones = [
+                    {n: -33, t: 'C', o: 2},{n: -32, t: 'C#', o: 2}, {n: -31, t: 'D', o: 2}, {n: -30, t: 'Eb', o: 2}, {n: -29, t: 'E', o: 2}, {n: -28, t: 'F', o: 2}, {n: -27, t: 'F#', o: 2}, {n: -26, t: 'G', o: 2}, {n: -25, t: 'Ab', o: 2}, {n: -24, t: 'A', o: 2}, {n: -23, t: 'A#', o: 2}, {n: -22, t: 'B', o: 2},
+                    {n: -21, t: 'C', o: 3},{n: -20, t: 'C#', o: 3}, {n: -19, t: 'D', o: 3}, {n: -18, t: 'Eb', o: 3}, {n: -17, t: 'E', o: 3}, {n: -16, t: 'F', o: 3}, {n: -15, t: 'F#', o: 3}, {n: -14, t: 'G', o: 3}, {n: -13, t: 'Ab', o: 3}, {n: -12, t: 'A', o: 3}, {n: -11, t: 'A#', o: 3}, {n: -10, t: 'B', o: 3},
+                    {n: -9, t: 'C', o: 4},{n: -8, t: 'C#', o: 4}, {n: -7, t: 'D', o: 4}, {n: -6, t: 'Eb', o: 4}, {n: -5, t: 'E', o: 4}, {n: -4, t: 'F', o: 4}, {n: -3, t: 'F#', o: 4}, {n: -2, t: 'G', o: 4}, {n: -1, t: 'Ab', o: 4}, {n: 0, t: 'A', o: 4}, {n: 1, t: 'A#', o: 4}, {n: 2, t: 'B', o: 4},
+                    {n: 3, t: 'C', o: 5},{n: 4, t: 'C#', o: 5}, {n: 5, t: 'D', o: 5}, {n: 6, t: 'Eb', o: 5}, {n: 7, t: 'E', o: 5}, {n: 8, t: 'F', o: 5}, {n: 9, t: 'F#', o: 5}, {n: 10, t: 'G', o: 5}, {n: 11, t: 'Ab', o: 5}, {n: 12, t: 'A', o: 5}, {n: 13, t: 'A#', o: 5}, {n: 14, t: 'B', o: 5},
+                    {n: 15, t: 'C', o: 6},{n: 16, t: 'C#', o: 6}, {n: 17, t: 'D', o: 6}, {n: 18, t: 'Eb', o: 6}, {n: 19, t: 'E', o: 6}, {n: 20, t: 'F', o: 6}, {n: 21, t: 'F#', o: 6}, {n: 22, t: 'G', o: 6}, {n: 23, t: 'Ab', o: 6 }, {n: 24, t: 'A', o: 6}, {n: 25, t: 'A#', o: 6}, {n: 26, t: 'B', o: 6}
+                ]
+
+            let kb = document.getElementById('keyboard'),
+                audioContext = new AudioContext(),
                 oscillator,
                 volumeNode,
                 gainNode
+
+            function calcFreq(half_step) {
+                return 440 * Math.pow( Math.pow(2,(1/12)), half_step )
+            }
 
             function keyDown(ev) {
                 ev.preventDefault()
@@ -114,30 +117,39 @@
                 gainNode.gain.setTargetAtTime(0.01, audioContext.currentTime, 0.2)
             }
             
-            function attachSound(button, freq) {
-                button.addEventListener('pointerdown', keyDown, false)
-                button.addEventListener('pointerup', keyUp, false)
+            function buildKey(key) {
+                let btn_wrap = document.createElement('div'),
+                    btn = document.createElement('button')
+                btn_wrap.className = 'key-wrap'
+                btn.className = 'key'
+                btn_wrap.innerHTML = `${ key.tone }<sub>${ key.octave }</sub> <span class="freq">${ key.freq.toFixed(1) }Hz</span>`
+                btn.dataset.freq = key.freq
+                btn_wrap.appendChild(btn)
+                btn.addEventListener('pointerdown', keyDown, false)
+                btn.addEventListener('pointerup', keyUp, false)
+                return btn_wrap
             }
 
             function renderKeyboard() {
-                let kb = document.getElementById('keyboard')
-                for (let k of keys) {
-                    let btn_wrap = document.createElement('div'),
-                        btn = document.createElement('button')
-                    btn_wrap.className = 'key-wrap'
-                    btn.className = 'key'
-                    btn_wrap.innerHTML = `${ k.tone }<sub>${ k.octave }</sub>`
-                    btn.dataset.freq = k.freq
-                    btn_wrap.appendChild(btn)
-                    kb.appendChild(btn_wrap)
-                    attachSound(btn, k.freq)
+                let keys = [],
+                    lowest = 18,
+                    highest = 46
+                for (let i = lowest; i < highest; i++) {
+                    let key = {
+                        tone: tones[i].t,
+                        octave: tones[i].o,
+                        freq: calcFreq(tones[i].n)
+                    }
+                    keys.push(key)
+                }
+                for (let k in keys) {
+                    kb.appendChild( buildKey(keys[k]) )
                 }
             }
             
-            (function init() {
-
-                document.getElementById('power-on').addEventListener('click', function() {
-                    audioContext = new AudioContext()
+            function init() {
+                renderKeyboard()
+                power_btn.addEventListener('click', function() {
                     volumeNode = audioContext.createGain()
                     volumeNode.gain.setTargetAtTime(0.5, audioContext.currentTime, 0);
                     volumeNode.connect(audioContext.destination)
@@ -152,9 +164,12 @@
                         volumeNode.gain.setTargetAtTime(parseFloat(ev.target.value), audioContext.currentTime, 0);
                     })
                 })
+                //octave_select.addEventListener('change', function() { renderKeyboard() })
+                //key_select.addEventListener('change', function() { renderKeyboard() })
+                
+            }
 
-                renderKeyboard()
-            })()
+            init()
 
         </script>
     </body>
