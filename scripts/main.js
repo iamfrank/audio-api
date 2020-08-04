@@ -1,6 +1,2 @@
-import { renderKeyBoard } from './keyboard.js'
-
-const global = 'einz'
-const actx = new AudioContext()
-
-renderKeyBoard({actx}, document.querySelector('main'))
+import { renderFretBoard } from './fretboard.js'
+renderFretBoard('#fretboard',['E4','B3','G3','D3','A2','E2'])

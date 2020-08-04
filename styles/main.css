@@ -1,5 +1,9 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font: 1em/1.2 sans-serif;
+    font: 1em/1.2 monospace;
     background-color: #666;
     color: #fff;
     padding: 0;
@@ -7,21 +11,67 @@ body {
 }
 
 header {
-    padding: 1rem 3rem;
+    padding: 1rem 2rem;
 }
 
 main {
-    padding: 1rem 3rem;
+    padding: 0;
 }
 
-fieldset {
+#fretboard {
+    border-top: solid 1px #fff;
+}
+
+.frets {
+    list-style: none;
+    padding: 0;
     margin: 0;
-    padding: .5rem;
-    border: solid 1px #555;
+    border-bottom: solid 1px #fff;
+    border-left: solid .75rem #fff;
 }
 
-.keyboard-key {
-    font-size: smaller;
-    opacity: .5;
-    display: block;
+.frets:nth-child(1) {
+    border-bottom-width: 1px;
+}
+
+.frets:nth-child(2) {
+    border-bottom-width: 2px;
+}
+
+.frets:nth-child(3) {
+    border-bottom-width: 3px;
+}
+
+.frets:nth-child(4) {
+    border-bottom-width: 4px;
+}
+
+.frets:nth-child(5) {
+    border-bottom-width: 5px;
+}
+
+.frets:nth-child(6) {
+    border-bottom-width: 6px;
+}
+
+.fret {
+    display: inline-block;
+    padding: .25rem;
+    margin: 0 .125rem;
+    background-color: #333;
+}
+
+.fret-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: transparent;
+    border: solid 1px #fff;
+    border-radius: 50%;
+    color: #ccc;
+}
+
+.fret-btn:hover,
+.fret-btn:active,
+.fret-btn:focus {
+    background-color: #888;
 }
